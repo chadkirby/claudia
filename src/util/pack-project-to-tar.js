@@ -1,5 +1,5 @@
 const path = require('path'),
-	runNpm = require('../util/run-npm'),
+	runYarn = require('../util/run-yarn'),
 	readjson = require('../util/readjson'),
 	fsPromise = require('../util/fs-promise'),
 	expectedArchiveName = require('../util/expected-archive-name');
@@ -7,9 +7,13 @@ module.exports = function packProjectToTar(projectDir, workingDir,  npmOptions, 
 	'use strict';
 	const absolutePath = path.resolve(projectDir),
 		runWithConfig = function (packageConfig) {
-			return fsPromise.mkdtempAsync(path.join(workingDir, expectedArchiveName(packageConfig, '-')))
-			.then(packDir => runNpm(packDir, ['pack', '-q', absolutePath].concat(npmOptions), logger, true))
-			.then(packDir => path.join(packDir, expectedArchiveName(packageConfig)));
+			return fsPromise.mkdtempAsync(
+				path.join(workingDir, expectedArchiveName(packageConfig, '-'))
+			).then(
+				packDir => runYarn(packDir, ['pack', '--silent', '--filename', expectedArchiveName(packageConfig), '--cwd', absolutePath].concat(npmOptions), logger, true)
+			).then(
+				packDir => path.join(packDir, expectedArchiveName(packageConfig))
+			);
 		};
 	return readjson(path.join(projectDir, 'package.json'))
 		.then(runWithConfig);

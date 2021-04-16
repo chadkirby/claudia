@@ -1,12 +1,12 @@
 /*global describe, it, beforeEach, afterEach, require, it, expect */
-const underTest = require('../src/util/run-npm'),
+const underTest = require('../src/util/run-yarn'),
 	fs = require('fs'),
 	fsUtil = require('../src/util/fs-util'),
 	ArrayLogger = require('../src/util/array-logger'),
 	tmppath = require('../src/util/tmppath'),
 	path = require('path');
 
-describe('runNpm', () => {
+describe('runYarn', () => {
 	'use strict';
 	let sourcedir, pwd,
 		logger;

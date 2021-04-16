@@ -2,7 +2,7 @@
 const underTest = require('../src/tasks/collect-files'),
 	os = require('os'),
 	fs = require('fs'),
-	runNpm = require('../src/util/run-npm'),
+	runYarn = require('../src/util/run-yarn'),
 	ArrayLogger = require('../src/util/array-logger'),
 	tmppath = require('../src/util/tmppath'),
 	fsPromise = require('../src/util/fs-promise'),
@@ -352,7 +352,7 @@ describe('collectFiles', () => {
 				done();
 			}, done.fail);
 		});
-		it('includes versions from package-lock.json if it exists', done => {
+		it('includes versions from yarn.lock if it exists', done => {
 			const lockContents = JSON.stringify({
 				'name': 't',
 				'version': '1.0.0',
@@ -366,10 +366,10 @@ describe('collectFiles', () => {
 					}
 				}
 			});
-			fs.writeFileSync(path.join(sourcedir, 'package-lock.json'), lockContents, 'utf8');
+			fs.writeFileSync(path.join(sourcedir, 'yarn.lock'), lockContents, 'utf8');
 			configurePackage({ files: ['roo*'], dependencies: {'claudia-api-builder': '^3'} });
 			underTest(sourcedir, workingdir)
-			.then(packagedir => fs.readFileSync(path.join(packagedir, 'package-lock.json'), 'utf8'))
+			.then(packagedir => fs.readFileSync(path.join(packagedir, 'yarn.lock'), 'utf8'))
 			.then(contents => expect(JSON.parse(contents).dependencies['claudia-api-builder'].version).toEqual('3.0.1'))
 			.then(done, done.fail);
 		});
@@ -551,10 +551,10 @@ describe('collectFiles', () => {
 					'opt-dep': 'file:../opt-dep'
 				}
 			});
-			fsPromise.writeFileAsync(path.join(sourcedir, 'package-lock.json'), JSON.stringify(lock), 'utf8')
+			fsPromise.writeFileAsync(path.join(sourcedir, 'yarn.lock'), JSON.stringify(lock), 'utf8')
 			.then(() => underTest(sourcedir, workingdir))
 			.then(() => {
-				expect(fsUtil.isFile(path.join(workingdir, 'package-lock.json'))).toBeFalsy();
+				expect(fsUtil.isFile(path.join(workingdir, 'yarn.lock'))).toBeFalsy();
 			})
 			.then(done, done.fail);
 
@@ -575,7 +575,7 @@ describe('collectFiles', () => {
 					'opt-dep': 'file:../opt-dep'
 				}
 			});
-			runNpm(sourcedir, 'install', nullLogger, true)
+			runYarn(sourcedir, 'install', nullLogger, true)
 				.then(() => underTest(sourcedir, workingdir))
 				.then(packagePath => {
 					expect(fsUtil.fileExists(path.join(packagePath, 'node_modules', 'prod-dep', 'prod-dep.js'))).toBeTruthy();
@@ -606,8 +606,7 @@ describe('collectFiles', () => {
 				}
 
 			});
-			runNpm(sourcedir, 'install', nullLogger, true)
-				.then(() => runNpm(sourcedir, 'shrinkwrap', nullLogger, true))
+			runYarn(sourcedir, 'install', nullLogger, true)
 				.then(() => underTest(sourcedir, workingdir))
 				.then(packagePath => {
 					expect(fsUtil.fileExists(path.join(packagePath, 'node_modules', 'prod-dep', 'prod-dep.js'))).toBeTruthy();
@@ -672,7 +671,7 @@ describe('collectFiles', () => {
 					'prod-dep': 'file:../prod-dep'
 				}
 			});
-			runNpm(path.join(workingdir, 'prod-dep'), 'install', nullLogger, true)
+			runYarn(path.join(workingdir, 'prod-dep'), 'install', nullLogger, true)
 			.then(() => underTest(sourcedir, workingdir))
 			.then(packagePath => {
 				expect(fsUtil.fileExists(path.join(packagePath, 'node_modules', 'prod-dep', 'prod-dep.js'))).toBeTruthy();

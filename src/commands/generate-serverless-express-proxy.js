@@ -2,7 +2,7 @@ const path = require('path'),
 	fsPromise = require('../util/fs-promise'),
 	fsUtil = require('../util/fs-util'),
 	NullLogger = require('../util/null-logger'),
-	runNpm = require('../util/run-npm');
+	runYarn = require('../util/run-yarn');
 module.exports = function generateServerlessExpressProxy(options, optionalLogger) {
 	'use strict';
 	const source = (options && options.source) || process.cwd(),
@@ -11,7 +11,7 @@ module.exports = function generateServerlessExpressProxy(options, optionalLogger
 		proxyModuleName = (options && options['proxy-module-name']) || 'lambda',
 		proxyModulePath = path.join(source, `${proxyModuleName}.js`),
 		expressModule = options && options['express-module'],
-		installDependencies = targetDir => runNpm(targetDir, ['install', serverlessModule, '-S'], logger);
+		installDependencies = targetDir => runYarn(targetDir, ['add', serverlessModule], logger);
 
 	if (!expressModule) {
 		return Promise.reject('please specify express app module with --express-module');

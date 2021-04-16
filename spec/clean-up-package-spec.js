@@ -4,7 +4,7 @@ const underTest = require('../src/tasks/clean-up-package'),
 	fsUtil = require('../src/util/fs-util'),
 	ArrayLogger = require('../src/util/array-logger'),
 	tmppath = require('../src/util/tmppath'),
-	runNpm = require('../src/util/run-npm'),
+	runYarn = require('../src/util/run-yarn'),
 	path = require('path');
 describe('cleanUpPackage', () => {
 	'use strict';
@@ -29,7 +29,7 @@ describe('cleanUpPackage', () => {
 				'minimist': '^1.2.0'
 			}
 		});
-		runNpm(sourcedir, ['install', '--silent'], logger, true)
+		runYarn(sourcedir, ['install', '--silent'], logger, true)
 		.then(done, done.fail);
 	});
 	afterEach(() => {
@@ -82,12 +82,12 @@ describe('cleanUpPackage', () => {
 		})
 		.then(done, done.fail);
 	});
-	it('removes package-lock.json if exists', done => {
-		fs.writeFileSync(path.join(sourcedir, 'package-lock.json'), '{}', 'utf8');
+	it('removes yarn.lock if exists', done => {
+		fs.writeFileSync(path.join(sourcedir, 'yarn.lock'), '{}', 'utf8');
 		underTest(sourcedir, {}, logger)
 		.then(result => {
 			expect(result).toEqual(sourcedir);
-			expect(fsUtil.isFile(path.join(sourcedir, 'package-lock.json'))).toBeFalsy();
+			expect(fsUtil.isFile(path.join(sourcedir, 'yarn.lock'))).toBeFalsy();
 		})
 		.then(done, done.fail);
 	});
